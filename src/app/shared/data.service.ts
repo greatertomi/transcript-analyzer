@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
+import {PersonModel} from '../models/person.model';
+import {CallModel} from '../models/call.model';
+import {CallDetailModel} from '../models/call-detail.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   constructor() { }
-  agents = [
+  agents: PersonModel[] = [
     {
       agent_id: 'A7f63308a',
       full_name: 'Harvey Pekar',
@@ -33,7 +36,7 @@ export class DataService {
     }
   ];
 
-  calls = [
+  calls: CallModel[] = [
     {
       call_id: '572a41e7a',
       calltype_id: 'f44785ceA',
@@ -55,7 +58,7 @@ export class DataService {
     }
   ];
 
-  callDetails = {
+  callDetails: CallDetailModel = {
     call_id: '572a41e7a',
     file_url: 'gs://recordings/572a41e7A.wav',
     calltype_id: 'f44785ceA',

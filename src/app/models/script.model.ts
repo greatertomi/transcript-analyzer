@@ -3,7 +3,8 @@ export class ScriptModel {
   similarity: number;
   sentence: string;
   matching_sentence: string;
-  channel: number;
-  timeFrom: number;
-  timeTo: number;
+  channel?: number;
+  timeFrom?: number;
+  timeTo?: number;
+  formattedTime?: string;
 }

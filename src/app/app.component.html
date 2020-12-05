@@ -9,20 +9,20 @@
     <div class="row pt-1">
       <div class="col-md-6">
         <mat-form-field appearance="fill">
-          <mat-select [(ngModel)]="selectedAgent">
+          <mat-select [(ngModel)]="selectedAgent" (ngModelChange)="getAgentCalls()">
             <mat-option disabled value="">Agent</mat-option>
-            <mat-option *ngFor="let food of foods" [value]="food.value">
-              {{food.viewValue}}
+            <mat-option *ngFor="let agent of agents" [value]="agent.agent_id">
+              {{agent.full_name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <div class="col-md-6">
         <mat-form-field appearance="fill">
-          <mat-select [(ngModel)]="selectedCall">
+          <mat-select [(ngModel)]="selectedCall" (ngModelChange)="getScripts()">
             <mat-option disabled value="">Call</mat-option>
-            <mat-option *ngFor="let food of foods" [value]="food.value">
-              {{food.viewValue}}
+            <mat-option *ngFor="let call of calls" [value]="call.call_id">
+              {{call.call_date}} - {{call.customer[0].full_name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -45,7 +45,6 @@
   </div>
 </div>-->
 <div class="container-fluid mt-5">
-
   <div class="row">
     <div class="col-md-6">
       <div class="card">
@@ -76,16 +75,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>00:15</td>
-                <td>Harvey</td>
+              <tr [class.agentText]="word.channel === 1" *ngFor="let word of transcript">
+                <td>{{word.formattedTime}}</td>
+                <td *ngIf="word.channel === 0">Unknown</td>
+                <td *ngIf="word.channel === 1">{{agentName}}</td>
+                <td *ngIf="word.channel === 2">{{guestName}}</td>
                 <td>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dolorum eos, ex exercitationem
-                  facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
-                  voluptas voluptatibus voluptatum. Molestias, velit.
+                  {{word.sentence}}
                 </td>
               </tr>
-              <tr>
+              <!--<tr>
                 <td>01:00</td>
                 <td>Harvey</td>
                 <td>
@@ -93,7 +92,7 @@
                   facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
                   voluptas voluptatibus voluptatum. Molestias, velit.
                 </td>
-              </tr>
+              </tr>-->
             </tbody>
           </table>
         </div>
@@ -122,22 +121,20 @@
           <table class="table">
             <thead>
             <tr>
-              <th>Time</th>
+              <th>Order</th>
               <th>Speaker</th>
               <th>Sentence</th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-              <td>00:15</td>
-              <td>Harvey</td>
+            <tr class="highlightedText" *ngFor="let word of script">
+              <td>{{word.order}}</td>
+              <td>Rep</td>
               <td>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dolorum eos, ex exercitationem
-                facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
-                voluptas voluptatibus voluptatum. Molestias, velit.
+                {{word.matching_sentence}}
               </td>
             </tr>
-            <tr>
+            <!--<tr>
               <td>01:00</td>
               <td>Harvey</td>
               <td>
@@ -145,7 +142,7 @@
                 facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
                 voluptas voluptatibus voluptatum. Molestias, velit.
               </td>
-            </tr>
+            </tr>-->
             </tbody>
           </table>
         </div>

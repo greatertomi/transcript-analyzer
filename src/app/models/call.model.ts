@@ -6,6 +6,7 @@ export class CallModel {
   agent: PersonModel[];
   customer: PersonModel[];
   call_start_time: string;
+  call_date?: string;
   gs_file_url: string;
   duration: number;
 }
