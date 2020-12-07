@@ -35,6 +35,7 @@ export class AppComponent implements OnInit{
   currentMatchingSentence = '';
   highlightOrder = 4;
   selected = false;
+  sensitivityValue = 0;
 
   constructor(private dataService: DataService) {
   }
@@ -79,6 +80,7 @@ export class AppComponent implements OnInit{
       this.script = this.dataService.callDetails.script;
       this.transcript = currentTranscript;
       this.selected = true;
+      this.sensitivityValue = 38;
     }
   }
 
