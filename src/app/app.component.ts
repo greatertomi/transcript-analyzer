@@ -60,6 +60,7 @@ export class AppComponent implements OnInit{
       }
       call.call_date = this.parseDateTime(call.call_start_time);
     }
+    this.selected = false;
   }
 
   parseDateTime(dateTime): string {
@@ -76,6 +77,7 @@ export class AppComponent implements OnInit{
     for (const call of currentTranscript) {
       call.formattedTime = this.formatTimeFrom(call.timeFrom);
     }
+    console.log(this.selectedAgent, this.selectedCall);
     if (this.selectedCall) {
       this.script = this.dataService.callDetails.script;
       this.transcript = currentTranscript;
