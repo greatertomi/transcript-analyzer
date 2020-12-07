@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {Color, Label, SingleDataSet} from 'ng2-charts';
+import {Label, SingleDataSet} from 'ng2-charts';
 import {ChartOptions} from 'chart.js';
 import {DataService} from './shared/data.service';
 import {PersonModel} from './models/person.model';
 import {CallModel} from './models/call.model';
-import {CallDetailModel} from './models/call-detail.model';
 import {ScriptModel} from './models/script.model';
 
 @Component({
@@ -17,10 +16,12 @@ export class AppComponent implements OnInit{
   agents: PersonModel[] = [];
   calls: CallModel[] = [];
   pieChartLabels: Label[] = ['Matched', 'Expected'];
-  pieChartData: SingleDataSet;
+  pieChart1Data: SingleDataSet;
+  pieChart2Data: SingleDataSet;
   pieChartLegend = false;
   pieChartPlugins = [];
-  pieChartReady = false;
+  pieChart1Ready = false;
+  pieChart2Ready = true;
   pieChartOptions: ChartOptions = {
     responsive: true
   };
@@ -30,17 +31,18 @@ export class AppComponent implements OnInit{
   script: ScriptModel[] = [];
   agentName;
   guestName;
+  currentMatchingPercent;
+  currentMatchingSentence = '';
+  highlightOrder = 4;
+  selected = false;
 
   constructor(private dataService: DataService) {
   }
 
   ngOnInit(): void {
-    this.analyzeData();
     this.getAgents();
-    this.selectedAgent = 'A7f63308a';
-    this.selectedCall = '572a41e7a';
     this.getAgentCalls();
-    this.getScripts();
+    this.pieChart2Data = [0, 100];
   }
 
   getAgents(): void {
@@ -76,6 +78,7 @@ export class AppComponent implements OnInit{
     if (this.selectedCall) {
       this.script = this.dataService.callDetails.script;
       this.transcript = currentTranscript;
+      this.selected = true;
     }
   }
 
@@ -88,9 +91,49 @@ export class AppComponent implements OnInit{
     return `${minutes}:${seconds}`;
   }
 
-  analyzeData(): void {
-    this.pieChartData = [2, 10];
-    this.pieChartReady = true;
+  calculateMatchPercent(agentSentence, scriptSentence): number {
+    const sentenceMap = {};
+    const scriptMap = {};
+    const agentBreakdown = agentSentence.replace(/[&\/\\#,+()$~%.":*?<>{}-]/g, '').split(/[., ]/);
+    const scriptBreakdown = scriptSentence.replace(/[&\/\\#,+()$~%.":*?<>{}-]/g, '').split(/[., ]/);
+    for (const word of agentBreakdown) {
+      if (word in sentenceMap) {
+        sentenceMap[word] += 1;
+      } else {
+        sentenceMap[word] = 1;
+      }
+    }
+    for (const word of scriptBreakdown) {
+      if (word in scriptMap) {
+        scriptMap[word] += 1;
+      } else {
+        scriptMap[word] = 1;
+      }
+    }
+    let count = 0;
+    for (const word in sentenceMap) {
+      if (word in scriptMap) {
+        count += sentenceMap[word];
+      }
+    }
+    const matchPercent = (count / scriptBreakdown.length) * 100;
+    return Math.round(matchPercent);
+  }
+
+  matchSentences(word): void {
+    const matchPercent = this.calculateMatchPercent(word.sentence, word.matching_sentence);
+    const scriptWord = this.script.filter(e => e.similarity === word.similarity)[0];
+    if (scriptWord) {
+      this.highlightOrder = scriptWord.order;
+      this.currentMatchingSentence = `${matchPercent}% matching with line #${scriptWord.order} "${scriptWord.matching_sentence}"`;
+    }
+    this.analyzeData(matchPercent);
+    this.currentMatchingPercent = matchPercent;
+  }
+
+  analyzeData(num): void {
+    this.pieChart1Data = [num, 100 - num];
+    this.pieChart1Ready = true;
   }
 
 }

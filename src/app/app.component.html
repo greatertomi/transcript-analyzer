@@ -1,11 +1,11 @@
 <mat-toolbar color="primary" id="menu">
-  <span>My App</span>
+  <span>Transcript Analyzer</span>
   <span>
     <img src="../assets/avatar.png" alt="Avatar">
   </span>
 </mat-toolbar>
 <mat-toolbar id="subMenu">
-  <div class="col-md-4">
+  <div class="col-md-6 col-sm-8">
     <div class="row pt-1">
       <div class="col-md-6">
         <mat-form-field appearance="fill">
@@ -31,11 +31,11 @@
   </div>
   <div>
     <span>Matching Sensitivity</span>
-    <mat-slider min="1" max="100" value="30" color="primary"></mat-slider>
+    <mat-slider min="1" max="100" value="38" color="primary"></mat-slider>
   </div>
 </mat-toolbar>
 
-<!--<div class="bodyContent">
+<div class="bodyContent" *ngIf="!selected">
   <div>
     <img src="../assets/image.svg" alt="Background Image"/>
   </div>
@@ -43,8 +43,8 @@
     <h1>Selection Pending</h1>
     <div>Select a call from the top conner and a transcript analysis will be shown here</div>
   </div>
-</div>-->
-<div class="container-fluid mt-5">
+</div>
+<div class="container-fluid mt-5" *ngIf="selected">
   <div class="row">
     <div class="col-md-6">
       <div class="card">
@@ -52,20 +52,21 @@
           <div>
             <h2>Real</h2>
           </div>
-          <div class="d-flex align-items-center">
-            <span class="font-weight-bold">40%</span>
+          <div class="d-flex align-items-center" *ngIf="currentMatchingPercent > 0">
+            <span class="font-weight-bold">{{currentMatchingPercent}}%</span>
             <div class="headerChart">
-              <canvas baseChart class="chart" *ngIf="pieChartReady"
-                      [data]="pieChartData"
+              <canvas baseChart class="chart" *ngIf="pieChart1Ready"
+                      [data]="pieChart1Data"
                       [labels]="pieChartLabels"
                       [chartType]="'pie'"
                       [legend]="pieChartLegend"
                       [options]="pieChartOptions"
-                      [plugins]="pieChartPlugins"></canvas>
+                      [plugins]="pieChartPlugins">
+              </canvas>
             </div>
           </div>
         </div>
-        <div class="card-body py-0">
+        <div class="card-body py-0 scroll">
           <table class="table">
             <thead>
               <tr>
@@ -75,7 +76,9 @@
               </tr>
             </thead>
             <tbody>
-              <tr [class.agentText]="word.channel === 1" *ngFor="let word of transcript">
+              <tr [class.agentText]="word.channel === 1" *ngFor="let word of transcript"
+                  [matTooltip]="currentMatchingPercent > 0 ? currentMatchingSentence: ''"
+                  (mouseover)="word.channel == 1 ? matchSentences(word) : ''">
                 <td>{{word.formattedTime}}</td>
                 <td *ngIf="word.channel === 0">Unknown</td>
                 <td *ngIf="word.channel === 1">{{agentName}}</td>
@@ -84,15 +87,6 @@
                   {{word.sentence}}
                 </td>
               </tr>
-              <!--<tr>
-                <td>01:00</td>
-                <td>Harvey</td>
-                <td>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dolorum eos, ex exercitationem
-                  facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
-                  voluptas voluptatibus voluptatum. Molestias, velit.
-                </td>
-              </tr>-->
             </tbody>
           </table>
         </div>
@@ -105,10 +99,10 @@
             <h2>Expected</h2>
           </div>
           <div class="d-flex align-items-center">
-            <span class="font-weight-bold">40%</span>
+            <span class="font-weight-bold">100%</span>
             <div class="headerChart">
-              <canvas baseChart class="chart" *ngIf="pieChartReady"
-                      [data]="pieChartData"
+              <canvas baseChart class="chart" *ngIf="pieChart2Ready"
+                      [data]="[0, 100]"
                       [labels]="pieChartLabels"
                       [chartType]="'pie'"
                       [legend]="pieChartLegend"
@@ -117,7 +111,7 @@
             </div>
           </div>
         </div>
-        <div class="card-body py-0">
+        <div class="card-body py-0 scroll">
           <table class="table">
             <thead>
             <tr>
@@ -127,22 +121,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="highlightedText" *ngFor="let word of script">
+            <tr [ngClass]="word.order === highlightOrder ? 'highlightedText' : 'agentText'" *ngFor="let word of script">
               <td>{{word.order}}</td>
               <td>Rep</td>
               <td>
                 {{word.matching_sentence}}
               </td>
             </tr>
-            <!--<tr>
-              <td>01:00</td>
-              <td>Harvey</td>
-              <td>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. At dolorum eos, ex exercitationem
-                facere in laboriosam laudantium libero nobis odit quibusdam rem, reprehenderit sint velit,
-                voluptas voluptatibus voluptatum. Molestias, velit.
-              </td>
-            </tr>-->
             </tbody>
           </table>
         </div>
